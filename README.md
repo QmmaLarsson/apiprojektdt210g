@@ -8,7 +8,7 @@ APIet är kopplat till en MongoDB Atlas-databas. För att komma igång, börja m
 
 ### Länk till API
 
--
+https://apiprojektdt210g.onrender.com/api
 
 ### Användning av API
 
