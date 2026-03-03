@@ -19,8 +19,8 @@ Nedan finns en beskriving av hur man på olika sätt kan nå APIet:
 | POST | /register | Lägger till en ny användare. Exempel på JSON-data: { "username": "user", "email": "email@email.com", "password": "password" }. |
 | POST | /login | Loggar in en användare. Exempel på JSON-data: { "username": "user", "password": "password" }. |
 | GET | /review | Hämtar recensioner. Exempel på JSON-data: [{ "bookId": "iCWgDwAAQBAJ", "reviewText": "Bra bok!", "rating": 5, "user": { "username": "user", "email": "email@email.com" } }]. |
-| GET | /review:id | Hämtar en enskild recension. |
+| GET | /review/id | Hämtar en enskild recension. |
 | POST | /review | Lägger till en ny recension. Detta är en skyddad route och kräver ett JWT-token för att kunna nås. |
 | DELETE | /review/id | Tar bort en recension. Detta är en skyddad route och kräver ett JWT-token för att kunna nås. |
 | PUT | /review/id | Uppdaterar en recension. Detta är en skyddad route och kräver ett JWT-token för att kunna nås. |
-| GET | /book:id | Hämtar en bok via Google Books API samt alla recensioner för den boken. |
+| GET | /book/bookId | Hämtar en bok via Google Books API samt alla recensioner för den boken. |
