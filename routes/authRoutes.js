@@ -18,28 +18,33 @@ const User = require("../models/user");
 //Lägg till ny användare
 router.post("/register", async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { username, email, password } = req.body;
 
         //Validera input
-        if (!username || !password) {
-            return res.status(400).json({ error: "Ogiltig inmatning, fyll i användarnamn och lösenord" });
+        if (!username || !email || !password) {
+            return res.status(400).json({ error: "Ogiltig inmatning, fyll i användarnamn, epost och lösenord" });
         }
 
         if (username.length < 4) {
             return res.status(400).json({ error: "Användarnamn måste bestå av minst fyra tecken" });
         }
 
+        const emailRegex = /^\S+@\S+\.\S+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ error: "Ogiltig e-postadress" });
+        }
+
         if (password.length < 6) {
             return res.status(400).json({ error: "Lösenord måste bestå av minst sex tecken" });
         }
 
-        const existingUser = await User.findOne({ username });
+        const existingUser = await User.findOne({ $or: [{ username }, { email }] });
         if (existingUser) {
-            return res.status(400).json({ error: "Användarnamnet är upptaget" });
+            return res.status(400).json({ error: "Användaren är redan registrerad" });
         }
 
         //Korrekt input - Skapa användare
-        const user = new User({ username, password });
+        const user = new User({ username, email, password });
         await user.save();
         res.status(201).json({ message: "Användare skapad" });
 
@@ -51,32 +56,33 @@ router.post("/register", async (req, res) => {
 //Logga in användare
 router.post("/login", async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { login, password } = req.body;
 
         //Validera input
-        if (!username || !password) {
+        if (!login || !password) {
             return res.status(400).json({ error: "Ogiltig inmatning, fyll i användarnamn och lösenord" });
         }
 
         //Kontrollera username och password
         //Kontrollera om användaren finns
-        const user = await User.findOne({ username });
+        const user = await User.findOne({ $or: [{ username: login }, { email: login }] });
         if (!user) {
-            return res.status(401).json({ error: "Felaktigt användarnamn eller lösenord" });
+            return res.status(401).json({ error: "Fel användarnamn/e-post eller lösenord" });
         }
         //Kontrollera lösenord
         const isPasswordMatch = await user.comparePassword(password);
         if (!isPasswordMatch) {
-            return res.status(401).json({ error: "Felaktigt användarnamn eller lösenord" });
+            return res.status(401).json({ error: "Fel användarnamn/e-post eller lösenord" });
         } else {
-            const payload = { username: username };
+            const payload = { id: user._id, username: user.username, email: user.email };
             const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: "3h" });
 
             res.status(200).json({
                 message: "Inloggningen lyckades",
                 user: {
                     _id: user._id,
-                    username: user.username
+                    username: user.username,
+                    email: user.email
                 },
                 token: token
             });
