@@ -18,11 +18,16 @@ const Review = require("../models/review");
 //Hämta recension
 router.get("/review", async (req, res) => {
     try {
-        // Hämta data från databasen
-        const review = await Review.find({});
+        const { bookId } = req.query;
+
+        //Om bookId skickas, filtrera recensionerna
+        const query = bookId ? { bookId } : {};
+
+        //Hämta recensioner och lägg till användarnamn
+        const reviews = await Review.find(query).populate("user", "username");
 
         // Skicka data tillbaka till klienten
-        res.json(review);
+        res.json(reviews);
     } catch (error) {
         // Hantera eventuella fel
         console.error("Det uppstod ett fel vid hämtning av data:", error);
