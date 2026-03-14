@@ -15,7 +15,7 @@ mongoose.connect(process.env.MONGO_URL).then(() => {
 //Review-model
 const Review = require("../models/review");
 
-//Hämta recension
+//Hämta recensioner
 router.get("/review", async (req, res) => {
     try {
         const { bookId } = req.query;
@@ -32,6 +32,16 @@ router.get("/review", async (req, res) => {
         // Hantera eventuella fel
         console.error("Det uppstod ett fel vid hämtning av data:", error);
         res.status(500).json({ message: "Det uppstod ett fel vid hämtning av data." });
+    }
+});
+
+//Hämta recensioner för en enskild person
+router.get("/review/my", authenticateToken, async (req, res) => {
+    try {
+        const reviews = await Review.find({ user: req.user.id }).populate("user", "username");
+        res.json(reviews);
+    } catch (error) {
+        res.status(500).json({ error: "Det uppstod ett fel vid hämtning av data" });
     }
 });
 
