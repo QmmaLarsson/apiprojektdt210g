@@ -55,7 +55,7 @@ router.get("/review/:id", async (req, res) => {
 //Posta ny recension
 router.post("/review", authenticateToken, async (req, res) => {
     try {
-        const { bookId, reviewText, rating } = req.body;
+        const { bookId, bookTitle, reviewText, rating } = req.body;
 
         //Validera input
         if (!bookId || !reviewText || !rating) {
@@ -72,7 +72,7 @@ router.post("/review", authenticateToken, async (req, res) => {
         }
 
         //Korrekt input - Skapa ny recension
-        const newItem = new Review({ bookId, reviewText, rating, user: req.user.id });
+        const newItem = new Review({ bookId, bookTitle, reviewText, rating, user: req.user.id });
         await newItem.save();
         res.status(201).json({ message: "Ny recension skapad" });
 
