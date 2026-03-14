@@ -10,6 +10,10 @@ const reviewSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    bookThumbnail: {
+        type: String,
+        default: ""
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
